@@ -2,31 +2,37 @@ from flask import Flask, request, render_template, url_for
 
 app = Flask(__name__)
 
-count = 0
+counted_post = 0
+counted_get = 0
+counted_delete = 0
+counted_put = 0
 
 counts = {
-    get_counts: 0,
-    post_counts: 0,
-    put_counts: 0,
-    delete_counts: 0
+    "get_counts": counted_get,
+    "post_counts": counted_post,
+    "put_counts": counted_put,
+    "delete_counts": counted_delete
 }
 
 
 @app.route('/', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def index():
-    global counts
+    global counts, counted_delete, counted_get, counted_post, counted_put
+    if request.method == 'GET':
+        counted_get += 1
+        counts.update({"get_counts": counted_get})
+    elif request.method == 'POST':
+        counted_post += 1
+        counts.update({"post_counts": counted_post})
+    elif request.method == 'PUT':
+        counted_put += 1
+        counts.update({"put_counts": counted_put})
 
-    if request.methods == 'GET':
-        counts.update(get_counts, count)
-    elif request.methods == 'POST':
-        pass
-    elif request.methods == 'PUT':
-        pass
-
-    elif request.methods == 'DELETE':
-        pass
-
-    return render_template('index.html', count=count)
+    elif request.method == 'DELETE':
+        counted_delete += 1
+        counts.update({"delete_counts": counted_delete})
+    print(counts)
+    return render_template('index.html', count=counts)
 
 
 if __name__ == '__main__':
